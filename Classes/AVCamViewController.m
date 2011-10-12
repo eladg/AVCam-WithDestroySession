@@ -115,7 +115,7 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
     [recordButton release];
     
     NSLog(@"%@, releaseing stillButton at %@",self,[self closeButton]);
-    [stillButton release];	
+    [closeButton release];	
 	
     NSLog(@"%@, releaseing focusModeLabel at %@",self,[self focusModeLabel]);
     [focusModeLabel release];
