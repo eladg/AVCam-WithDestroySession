@@ -157,8 +157,8 @@
     NSLog(@"\t%@, removing observer:%@",self,[self deviceDisconnectedObserver]);
     [notificationCenter removeObserver:[self deviceDisconnectedObserver]];
     
-    //NSLog(@"\t%@, removing observer:%@ for UIDeviceOrientationDidChangeNotification",self,self);
-	//[notificationCenter removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    NSLog(@"\t%@, removing observer:%@ for UIDeviceOrientationDidChangeNotification",self,self);
+	[notificationCenter removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 	
     NSLog(@"\t%@, Prevent from device to generate Orientation Notifications",self);
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
