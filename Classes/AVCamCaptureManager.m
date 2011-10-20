@@ -148,50 +148,25 @@
 
 - (void) dealloc
 {
-    NSLog(@"\t%@, removing Observers:",self);
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-    
-    NSLog(@"\t%@, removing observer:%@",self,[self deviceConnectedObserver]);
     [notificationCenter removeObserver:[self deviceConnectedObserver]];
-    
-    NSLog(@"\t%@, removing observer:%@",self,[self deviceDisconnectedObserver]);
     [notificationCenter removeObserver:[self deviceDisconnectedObserver]];
-    
-    NSLog(@"\t%@, removing observer:%@ for UIDeviceOrientationDidChangeNotification",self,self);
 	[notificationCenter removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-	
-    NSLog(@"\t%@, Prevent from device to generate Orientation Notifications",self);
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    
-    NSLog(@"\t%@, stopRunning Session",self);
     [[self session] stopRunning];
-
-    NSLog(@"\t%@, release session at %@",self,[self session]);
     [session release];
-
-    NSLog(@"\t%@, release videoInput at %@",self,[self videoInput]);
     [videoInput release];
-
-    NSLog(@"\t%@, release audioInput at %@",self,[self audioInput]);
     [audioInput release];
-
-    NSLog(@"\t%@, release stillImageOutput at %@",self,[self stillImageOutput]);
     [stillImageOutput release];
-    
-    NSLog(@"\t%@, release release at %@",self,[self recorder]);
     [recorder release];
-    
-    NSLog(@"\t%@, releasing supper at %@",self,[self superclass]);
     [super dealloc];
 }
 
 - (BOOL) setupSession
 {
-
     NSLog(@"In setup Session");
 
     BOOL success = NO;
-    
 	// Set torch and flash mode to auto
 	if ([[self backFacingCamera] hasFlash]) {
 		if ([[self backFacingCamera] lockForConfiguration:nil]) {
@@ -289,11 +264,12 @@
     // release
     [session release];
     
-    // remove movie file temp output
-    [self removeFile:[[self recorder] outputFileURL]];
-    
     // remove AVCamRecorder
     [recorder release];
+    
+    if ([delegate respondsToSelector:@selector(captureManagerSessionEnded:)]) {
+        [delegate captureManagerSessionEnded:self];
+    }
 }
 
 - (void) startRecording

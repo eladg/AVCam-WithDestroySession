@@ -88,4 +88,5 @@
 - (void) captureManagerStillImageCaptured:(AVCamCaptureManager *)captureManager;
 - (void) captureManagerDeviceConfigurationChanged:(AVCamCaptureManager *)captureManager;
 - (void) captureManagerSessionWillEnd:(AVCamCaptureManager *)captureManager;
+- (void) captureManagerSessionEnded:(AVCamCaptureManager *)captureManager;
 @end

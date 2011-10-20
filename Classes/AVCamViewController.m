@@ -50,6 +50,8 @@
 #import "AVCamRecorder.h"
 #import <AVFoundation/AVFoundation.h>
 
+static BOOL debug = YES;
+
 static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 @interface AVCamViewController () <UIGestureRecognizerDelegate>
@@ -96,49 +98,25 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 - (void)dealloc
 {
-    NSLog(@"%@, removingObserver forkey: captureManager.videoInput.device.focusMode",self);
-    [self removeObserver:self forKeyPath:@"captureManager.videoInput.device.focusMode"];
-
-    NSLog(@"%@, releaseing captureManager at %@",self,[self captureManager]);
+    [self removeObserver:self forKeyPath:nil];
 	[captureManager release];
-    
-    NSLog(@"%@, releaseing videoPreviewView at %@",self,[self videoPreviewView]);
     [videoPreviewView release];
-	
-    NSLog(@"%@, releaseing captureVideoPreviewLayer at %@",self,[self captureVideoPreviewLayer]);
     [captureVideoPreviewLayer release];
-    
-    NSLog(@"%@, releaseing cameraToggleButton at %@",self,[self cameraToggleButton]);
     [cameraToggleButton release];
-    
-    NSLog(@"%@, releaseing recordButton at %@",self,[self recordButton]);
     [recordButton release];
-    
-    NSLog(@"%@, releaseing stillButton at %@",self,[self closeButton]);
     [closeButton release];	
-	
-    NSLog(@"%@, releaseing focusModeLabel at %@",self,[self focusModeLabel]);
     [focusModeLabel release];
-
-    NSLog(@"%@, releaseing super at %@",self,[self superclass]);
     [super dealloc];
-
-    NSLog(@".");
-    NSLog(@"########################################################################");
-	NSLog(@"%@ properties summery:",self);
-    NSLog(@"%@ - retain:%d",[self captureManager],[[self captureManager] retainCount]);
-    NSLog(@"%@ - retain:%d",[self videoPreviewView],[[self videoPreviewView] retainCount]);
-    NSLog(@"%@ - retain:%d",[self captureVideoPreviewLayer],[[self captureVideoPreviewLayer] retainCount]);
-    NSLog(@"%@ - retain:%d",[self cameraToggleButton],[[self cameraToggleButton] retainCount]);
-    NSLog(@"%@ - retain:%d",[self recordButton],[[self recordButton] retainCount]);
-    NSLog(@"%@ - retain:%d",[self closeButton],[[self closeButton] retainCount]);
-    NSLog(@"%@ - retain:%d",[self focusModeLabel],[[self focusModeLabel] retainCount]);
-    NSLog(@"########################################################################");
-    NSLog(@".");
 }
 
 - (void)viewDidLoad
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(notificationCallback:)
+                                                 name:nil
+                                               object:nil
+     ];
+    
     [[self cameraToggleButton] setTitle:NSLocalizedString(@"Camera", @"Toggle camera button title")];
     [[self recordButton] setTitle:NSLocalizedString(@"Record", @"Toggle recording button record title")];
     [[self closeButton] setTitle:NSLocalizedString(@"Close", @"Capture still image button title")];
@@ -234,10 +212,12 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 {
     // Start recording if there isn't a recording running. Stop recording if there is.
     [[self recordButton] setEnabled:NO];
-    if (![[[self captureManager] recorder] isRecording])
+    if (![[[self captureManager] recorder] isRecording]) {
         [[self captureManager] startRecording];
-    else
+    }
+    else {
         [[self captureManager] stopRecording];
+    }
 }
 
 - (IBAction)closeCamera:(id)sender
@@ -245,7 +225,7 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
     NSLog(@"\n\n--- CLOSING CAMERA ---\n\n");
     [captureManager destroySession];
     
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:NO];
 }
 
 @end
@@ -371,6 +351,21 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
     });
 }
 
+- (void) notificationCallback:(NSNotification *) notification {
+
+    // Important Notifications are: 
+    //      Recorder_DidStartPreviewing,                        
+    //      Recorder_DidStopPreviewing,                         
+    //      AVCaptureSessionDidStartRunningNotification,        
+    //      Recorder_DidStartRecording,
+    //      Recorder_DidStopRecording,
+    //      Recorder_DidCompleteOutput
+    
+    if (debug == YES) {
+        NSLog(@"Recived Notification: %@",[notification name]);
+    }
+}
+
 @end
 
 @implementation AVCamViewController (AVCamCaptureManagerDelegate)
@@ -418,8 +413,12 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 
 - (void)captureManagerSessionWillEnd:(AVCamCaptureManager *)captureManager
 {
-    NSLog(@"In destroy Session");
+    NSLog(@"In Session Will End");
     [videoPreviewView release];
+}
+
+- (void) captureManagerSessionEnded:(AVCamCaptureManager *)captureManager {
+    NSLog(@"In Session Ended");
 }
 
 

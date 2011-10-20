@@ -32,9 +32,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    NSLog(@"\n\n--- BUTTON-VIEW viewDidLoad ---\n\n");
-    NSLog(@"%@, retain=%d",camera,[camera retainCount]);
 }
 
 - (void)viewDidUnload
@@ -51,11 +48,8 @@
 }
 
 - (IBAction)openCamera:(id)sender {
-    
-    NSLog(@"\n\n--- OPENING CAMERA ---\n\n");
-    
     camera = [[AVCamViewController alloc] init];
-    [self presentModalViewController:camera animated:YES];
+    [self presentModalViewController:camera animated:NO];
 }
 
 @end

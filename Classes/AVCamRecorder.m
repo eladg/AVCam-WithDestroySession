@@ -79,20 +79,10 @@
 
 - (void) dealloc
 {
-    NSLog(@"%@, dealloc",self);
-    NSLog(@"%@, removing output (deleting file)",self);
     [[self session] removeOutput:[self movieFileOutput]];
-    
-    NSLog(@"%@, releasing Session at %@",self,[self session]);
 	[session release];
-
-    NSLog(@"%@, releasing outputFileURL at %@",self,[self outputFileURL]);
     [outputFileURL release];
-
-    NSLog(@"%@, releasing movieFileOutput at %@",self,[self movieFileOutput]);
     [movieFileOutput release];
-    
-    NSLog(@"%@, removing super class (%@)",self,[self superclass]);
     [super dealloc];
 }
 
