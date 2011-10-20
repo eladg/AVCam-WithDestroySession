@@ -243,7 +243,8 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 - (IBAction)closeCamera:(id)sender
 {
     NSLog(@"\n\n--- CLOSING CAMERA ---\n\n");
-    captureManager = nil;
+    [captureManager destroySession];
+    
     [self dismissModalViewControllerAnimated:YES];
 }
 
@@ -414,5 +415,12 @@ static void *AVCamFocusModeObserverContext = &AVCamFocusModeObserverContext;
 {
 	[self updateButtonStates];
 }
+
+- (void)captureManagerSessionWillEnd:(AVCamCaptureManager *)captureManager
+{
+    NSLog(@"In destroy Session");
+    [videoPreviewView release];
+}
+
 
 @end

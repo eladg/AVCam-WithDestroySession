@@ -187,6 +187,9 @@
 
 - (BOOL) setupSession
 {
+
+    NSLog(@"In setup Session");
+
     BOOL success = NO;
     
 	// Set torch and flash mode to auto
@@ -274,7 +277,23 @@
 }
 
 - (void) destroySession {
+        
+    if ([delegate respondsToSelector:@selector(captureManagerSessionWillEnd:)]) {
+        [delegate captureManagerSessionWillEnd:self];
+    }
     
+    // remove the device inputs
+    [session removeInput:[self videoInput]];
+    [session removeInput:[self audioInput]];
+
+    // release
+    [session release];
+    
+    // remove movie file temp output
+    [self removeFile:[[self recorder] outputFileURL]];
+    
+    // remove AVCamRecorder
+    [recorder release];
 }
 
 - (void) startRecording
